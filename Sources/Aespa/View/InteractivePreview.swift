@@ -28,6 +28,10 @@ public struct InteractivePreviewOption {
     
     /// Flag that controls whether a crosshair is displayed on the preview. Default is `true`.
     public var enableShowingCrosshair: Bool
+    
+    public var previewViewFrameWidth: CGFloat
+    
+    public var previewViewFrameHeight: CGFloat
 
     /// Initialize the option
     public init(
@@ -35,13 +39,17 @@ public struct InteractivePreviewOption {
         enableZoom: Bool = true,
         enableFocus: Bool = true,
         enableChangeFocusModeWhenMoved: Bool = true,
-        enableShowingCrosshair: Bool = true
+        enableShowingCrosshair: Bool = true,
+        previewViewFrameWidth : CGFloat = 360,
+        previewViewFrameHeight : CGFloat = 240
     ) {
         self.enableChangePosition = enableChangePosition
         self.enableZoom = enableZoom
         self.enableFocus = enableFocus
         self.enableChangeFocusModeWhenMoved = enableChangeFocusModeWhenMoved
         self.enableShowingCrosshair = enableShowingCrosshair
+        self.previewViewFrameWidth = previewViewFrameWidth
+        self.previewViewFrameHeight = previewViewFrameHeight
     }
 }
 
@@ -99,9 +107,10 @@ public struct InteractivePreview: View {
         GeometryReader { geometry in
             ZStack {
                 preview
-                    .gesture(changePositionGesture)
+//                    .gesture(changePositionGesture)
 //                    .gesture(tapToFocusGesture(geometry)) // Currently disabled
                     .gesture(pinchZoomGesture)
+                    
                 
                 // Crosshair
                 Rectangle()

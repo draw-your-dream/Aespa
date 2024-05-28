@@ -31,6 +31,7 @@ struct Preview: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
+        print("Preview.updateUIViewController")
         previewLayer.videoGravity = gravity
         uiViewController.view.layer.addSublayer(previewLayer)
         

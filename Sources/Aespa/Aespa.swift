@@ -9,6 +9,8 @@
 open class Aespa {
     /// The core `AespaSession` that manages the actual video recording session.
     private static var core: AespaSession?
+    
+    private static var option: AespaOption?
 
     /// Creates a new `AespaSession` with the given options.
     ///
@@ -16,17 +18,17 @@ open class Aespa {
     ///   - option: The `AespaOption` to configure the session.
     /// - Returns: The newly created `AespaSession`.
     public static func session(
-        with option: AespaOption,
+        with _option: AespaOption,
         onComplete: @escaping CompletionHandler = { _ in }
     ) -> AespaSession {
         if let core { return core }
         
-        let newCore = AespaSession(option: option)
+        // Configure session now
+        let newCore = AespaSession(option: _option)
 
         // Check logging option
-        Logger.enableLogging = option.log.loggingEnabled
+        Logger.enableLogging = _option.log.loggingEnabled
         
-        // Configure session now
         Task {
             guard
                 case .permitted = await AuthorizationChecker.checkCaptureAuthorizationStatus()
@@ -37,8 +39,17 @@ open class Aespa {
             newCore.startSession(onComplete)
         }
         
+        option = _option
         core = newCore
         return newCore
+    }
+    
+    public static func start(_ onComplete: @escaping CompletionHandler = { _ in }) throws {
+        if  self.core == nil {
+            self.core = AespaSession(option: self.option ?? AespaOption(albumName: "test"))
+        }
+        
+        
     }
     
     /// Terminates the current `AespaSession`.
@@ -49,10 +60,12 @@ open class Aespa {
         guard let core = core else {
             return
         }
-
-        core.terminateSession { result in
-            self.core = nil
-            onComplete(result)
+        Task {
+            core.terminateSession { result in
+                self.core = nil
+                onComplete(result)
+            }
         }
+        
     }
 }
